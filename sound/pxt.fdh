@@ -29,6 +29,7 @@ static void GenerateSquareModel(unsigned char *table);
 static void GenerateRandModel(unsigned char *table);
 void GenerateWhiteModel(void);
 static void GeneratePulseModel(unsigned char *table);
+double Interpolate(int sample1, int sample2, double ratio);
 char pxt_init(void);
 char pxt_initsynth(void);
 char pxt_SetModel(stPXWave *pxwave, int m);

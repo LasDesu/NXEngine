@@ -169,6 +169,18 @@ int i;
 	for(;i<256;i++) table[i] = (uint8_t)-0x40;
 }
 
+// Interpolates a new sample from two samples which will be "in-between" the two samples.
+// if ratio is 0.00, it will return exactly sample1.
+// if ratio is 1.00, it will return exactly sample2.
+// and if ratio is something like 0.5, it will mix the samples together.
+double Interpolate(int sample1, int sample2, double ratio)
+{
+double s1, s2;
+	s1 = ((double)sample1 * (1.00f - ratio));
+	s2 = ((double)sample2 * ratio);
+	return (s1 + s2);
+}
+
 
 // generate the models so we can do synth
 // must call this before doing any rendering
@@ -688,19 +700,42 @@ int i;
 signed char *buffer = snd->final_buffer;
 signed short *outbuffer;
 int malc_size;
+double phaseacc = 0;
+double sample_inc;
+int num_samples;
+
+	sample_inc = 22050 / (double)SAMPLE_RATE;
+	num_samples = snd->final_size / sample_inc;
 
 	// convert the buffer from 8-bit mono signed to 16-bit stereo signed
-	malc_size = (snd->final_size * 2 * 2);
+	malc_size = num_samples * 2 * 2;
 	outbuffer = (signed short *)malloc(malc_size);
 	
-	for(i=ap=0;i<snd->final_size;i++)
+	for(i=ap=0;i<num_samples;i++)
 	{
-		value = buffer[i];
-		value *= 200;
+		double iratio;
+		double audioval;
+		int pos1, pos2;
+		
+		pos1 = (int)phaseacc;
+		pos2 = pos1 + 1;
+		if (pos2 >= snd->final_size) pos2 = pos1;
+		
+		iratio = phaseacc - (int)phaseacc;
+		
+		audioval = Interpolate(buffer[pos1], buffer[pos2], iratio);
+		value = audioval * 200;
 		value = htole16(value);
 		
-		outbuffer[ap++] = value;		// left ch
-		outbuffer[ap++] = value;		// right ch
+		outbuffer[ap++] = value;
+		outbuffer[ap++] = value;
+		
+		phaseacc += sample_inc;
+		if ((int)phaseacc > snd->final_size)
+		{
+			staterr(" **ERROR-phaseacc ran over end of chunk %.2f %d", phaseacc, snd->final_size);
+			break;
+		}
 	}
 	
 	

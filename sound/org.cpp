@@ -16,9 +16,9 @@
 #define DRUM_PXT
 
 #ifdef DRUM_PXT
-	#define drumK		22050
+	#define drumK		(SAMPLE_RATE)
 #else
-	#define drumK		30050
+	#define drumK		((SAMPLE_RATE)*30050/22010)
 #endif
 
 static bool org_inited = false;
@@ -667,19 +667,6 @@ static void ComputeVolumeRatios(int volume, int panning, double *volume_ratio, \
 }
 
 
-// Interpolates a new sample from two samples which will be "in-between" the two samples.
-// if ratio is 0.00, it will return exactly sample1.
-// if ratio is 1.00, it will return exactly sample2.
-// and if ratio is something like 0.5, it will mix the samples together.
-static double Interpolate(int sample1, int sample2, double ratio)
-{
-double s1, s2;
-	s1 = ((double)sample1 * (1.00f - ratio));
-	s2 = ((double)sample2 * ratio);
-	return (s1 + s2);
-}
-
-
 // ensures that there are exactly desired_samples contained in the output buffer of instrument m.
 // if there are fewer samples than desired, the gap is filled with silence.
 // if there are more, the extra audio is truncated.
@@ -727,7 +714,7 @@ int clear_bytes;
 static void note_open(stNoteChannel *chan, int wave, int pitch, int note)
 {
 double new_sample_rate;
-#define	samplK	 	 11025		// constant is original sampling rate of the samples in the wavetable
+#define	samplK	 	((SAMPLE_RATE)/2)		// constant is original sampling rate of the samples in the wavetable
 
 	// compute how quickly, or slowly, to play back the wavetable sample
 	new_sample_rate = GetNoteSampleRate(note, pitch);

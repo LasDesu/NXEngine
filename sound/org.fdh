@@ -53,7 +53,6 @@ static void mix_buffers(void);
 static void queue_final_buffer(void);
 static void OrgBufferFinished(int channel, int buffer_no);
 static void ComputeVolumeRatios(int volume, int panning, double *volume_ratio, double *volume_left_ratio, double *volume_right_ratio);
-static double Interpolate(int sample1, int sample2, double ratio);
 static void ForceSamplePos(int m, int desired_samples);
 static void silence_gen(stNoteChannel *chan, int num_samples);
 static void note_open(stNoteChannel *chan, int wave, int pitch, int note);
@@ -71,6 +70,7 @@ int org_GetCurrentBuffer(void);
 /* located in sound/pxt.cpp */
 
 //-------------------[referenced from sound/org.cpp]-----------------//
+double Interpolate(int sample1, int sample2, double ratio);
 char pxt_initsynth(void);
 char pxt_load(const char *fname, stPXSound *snd);
 char pxt_Render(stPXSound *snd);
