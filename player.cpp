@@ -1315,7 +1315,7 @@ int i;
 	
 	for(i=0;i<player->nrepel_l;i++)
 	{
-		player->repel_l[i].x = sprites[s].block_l[i].x + 1;
+		player->repel_l[i].x = sprites[s].block_l[i].x + 0;
 		player->repel_l[i].y = sprites[s].block_l[i].y;
 	}
 	
@@ -1387,6 +1387,7 @@ void PDoRepel(void)
 			//debug("REPEL [down]");
 		}
 	}
+	*/
 	
 	// do repel up
 	if (player->CheckAttribute(player->repel_d, player->nrepel_d, TA_SOLID_PLAYER))
@@ -1397,7 +1398,6 @@ void PDoRepel(void)
 			//debug("REPEL [up]");
 		}
 	}
-	*/
 }
 
 /*
