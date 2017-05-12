@@ -740,7 +740,7 @@ int num_samples;
 	
 	
 	sound_fx[slot].buffer = outbuffer;
-	sound_fx[slot].len = snd->final_size;
+	sound_fx[slot].len = num_samples;
 	//lprintf("pxt ready to play in slot %d\n", slot);
 }
 
