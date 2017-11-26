@@ -30,6 +30,7 @@ void randblink(Object *o, int blinkframe, int blinktime, int prob);
 /* located in ai/sand/sand.cpp */
 
 //-----------------[referenced from ai/sand/sand.cpp]----------------//
+void ai_beetle_horiz_brown(Object *o);
 void ai_polish(Object *o);
 void ondeath_polish(Object *o);
 void ai_polishbaby(Object *o);

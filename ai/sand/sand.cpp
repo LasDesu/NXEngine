@@ -1,11 +1,10 @@
 
 #include "../stdai.h"
-#include "../egg/egg.fdh"	// for ai_beetle_horiz
 #include "sand.fdh"
 
 INITFUNC(AIRoutines)
 {
-	ONTICK(OBJ_BEETLE_BROWN, ai_beetle_horiz);
+	ONTICK(OBJ_BEETLE_BROWN, ai_beetle_horiz_brown);
 	
 	ONTICK(OBJ_POLISH, ai_polish);
 	ONDEATH(OBJ_POLISH, ondeath_polish);
@@ -39,6 +38,62 @@ INITFUNC(AIRoutines)
 /*
 void c------------------------------() {}
 */
+
+void ai_beetle_horiz_brown(Object *o)
+{
+	enum { FLYING = 0, ON_WALL = 1 };
+	
+	if (o->state == FLYING)
+	{
+		if (++o->animtimer == 2)
+		{
+			o->animtimer = 0;
+			o->animframe ^= 1;
+		}
+		
+		o->frame = (o->animframe + 1);
+		
+		if (o->dir == RIGHT)
+		{
+			o->xinertia += 0x50;
+			if (o->xinertia > 0x32c) o->xinertia = 0x32c;
+			
+			if (o->blockr)
+			{
+				o->dir = LEFT;
+				o->state = ON_WALL;
+				o->frame = 0;
+				o->xinertia = 0;
+			}
+		}
+		else
+		{
+			o->xinertia -= 0x50;
+			if (o->xinertia < -0x32c) o->xinertia = -0x32c;
+			
+			if (o->blockl)
+			{
+				o->dir = RIGHT;
+				o->state = ON_WALL;
+				o->frame = 0;
+				o->xinertia = 0;
+			}
+		}
+	}
+	else
+	{	// waiting on wall
+		if (abs(o->y - player->y) < (12<<CSF))
+		{
+			if ((o->dir == RIGHT && (player->x > o->x)) || \
+				(o->dir == LEFT && (player->x < o->x)))
+			{
+				o->animframe = 0;
+				o->state = FLYING;
+			}
+		}
+	}
+}
+
 
 void ai_polish(Object *o)
 {

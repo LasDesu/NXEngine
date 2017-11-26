@@ -140,56 +140,62 @@ void c------------------------------() {}
 
 void ai_beetle_horiz(Object *o)
 {
-	enum { FLYING = 0, ON_WALL = 1 };
+	enum { INIT = 0, FLYING, ON_WALL };
 	
-	if (o->state == FLYING)
+	switch(o->state)
 	{
-		if (++o->animtimer == 2)
-		{
+		case INIT:
+			o->animframe = 0;
 			o->animtimer = 0;
-			o->animframe ^= 1;
-		}
-		
-		o->frame = (o->animframe + 1);
-		
-		if (o->dir == RIGHT)
-		{
-			o->xinertia += 0x50;
-			if (o->xinertia > 0x32c) o->xinertia = 0x32c;
+			o->state = FLYING;
 			
-			if (o->blockr)
-			{
-				o->dir = LEFT;
-				o->state = ON_WALL;
-				o->frame = 0;
-				o->xinertia = 0;
-			}
-		}
-		else
-		{
-			o->xinertia -= 0x50;
-			if (o->xinertia < -0x32c) o->xinertia = -0x32c;
-			
-			if (o->blockl)
-			{
-				o->dir = RIGHT;
-				o->state = ON_WALL;
-				o->frame = 0;
-				o->xinertia = 0;
-			}
-		}
-	}
-	else
-	{	// waiting on wall
-		if (abs(o->y - player->y) < (12<<CSF))
-		{
-			if ((o->dir == RIGHT && (player->x > o->x)) || \
-				(o->dir == LEFT && (player->x < o->x)))
+		case ON_WALL:
+			// waiting on wall
+			if (++o->animtimer >= 30)
 			{
 				o->animframe = 0;
 				o->state = FLYING;
 			}
-		}
+			break;
+			
+		case FLYING:
+			if (++o->animtimer == 2)
+			{
+				o->animtimer = 0;
+				o->animframe ^= 1;
+			}
+			
+			o->frame = (o->animframe + 1);
+			
+			if (o->dir == RIGHT)
+			{
+				o->xinertia += 0x30;
+				if (o->xinertia > 0x32c) o->xinertia = 0x32c;
+				
+				if (o->blockr)
+				{
+					o->dir = LEFT;
+					o->state = ON_WALL;
+					o->frame = 0;
+					o->xinertia = 0;
+					o->animtimer = 0;
+				}
+			}
+			else
+			{
+				o->xinertia -= 0x30;
+				if (o->xinertia < -0x32c) o->xinertia = -0x32c;
+				
+				if (o->blockl)
+				{
+					o->dir = RIGHT;
+					o->state = ON_WALL;
+					o->frame = 0;
+					o->xinertia = 0;
+					o->animtimer = 0;
+				}
+			}
+			break;
 	}
 }
 

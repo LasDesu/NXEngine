@@ -232,13 +232,14 @@ int32_t nexttick = 0;
 				game.ffwdtime--;
 			
 			nexttick = curtime + GAME_WAIT;
-			
+#if 0
 			// pause game if window minimized
 			if ((SDL_GetAppState() & VISFLAGS) != VISFLAGS)
 			{
 				AppMinimized();
 				nexttick = 0;
 			}
+#endif
 		}
 		else
 		{
